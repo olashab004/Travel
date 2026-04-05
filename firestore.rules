@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: states
+    // Fields:
+    //   - name: string (required)
+    //   - code: string (required)
+    //   - description: string (optional)
+    //   - imageUrl: string (optional)
+    //   - capital: string (optional)
+    //   - region: string (optional)
+    //   - tagline: string (optional)
+    //   - language: string (optional)
+    //
+    // Collection: cities
+    // Fields:
+    //   - name: string (required)
+    //   - stateId: string (required)
+    //   - description: string (optional)
+    //   - imageUrl: string (optional)
+    //
+    // Collection: places
+    // Fields:
+    //   - name: string (required)
+    //   - stateId: string (required)
+    //   - cityId: string (required)
+    //   - category: string (required, Heritage|Nature|Religious|Adventure|Urban|Beach|Wildlife)
+    //   - description: string (required)
+    //   - bestTimeToVisit: string (optional)
+    //   - entryFees: string (optional)
+    //   - timings: string (optional)
+    //   - locationUrl: string (optional)
+    //   - imageUrls: list of strings (optional)
+    //   - nearbyAttractions: list of strings (optional)
+    //   - tags: list of strings (optional)
+    //   - isFeatured: boolean (optional)
+    //
+    // Collection: users
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - role: string (required, admin|user)
+    //   - displayName: string (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "sahilola44@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidState(data) {
+      return hasRequiredFields(['name', 'code']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.code is string && data.code.size() > 0 && data.code.size() < 10 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 2000)) &&
+             (!('imageUrl' in data) || isValidUrl(data.imageUrl)) &&
+             (!('capital' in data) || (data.capital is string && data.capital.size() < 100)) &&
+             (!('region' in data) || (data.region is string && data.region.size() < 50)) &&
+             (!('tagline' in data) || (data.tagline is string && data.tagline.size() < 200)) &&
+             (!('language' in data) || (data.language is string && data.language.size() < 100));
+    }
+
+    function isValidCity(data) {
+      return hasRequiredFields(['name', 'stateId']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.stateId is string && data.stateId.size() > 0 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 1000)) &&
+             (!('imageUrl' in data) || isValidUrl(data.imageUrl));
+    }
+
+    function isValidPlace(data) {
+      let categories = ['Heritage', 'Nature', 'Religious', 'Adventure', 'Urban', 'Beach', 'Wildlife'];
+      return hasRequiredFields(['name', 'stateId', 'cityId', 'category', 'description']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.stateId is string && data.stateId.size() > 0 &&
+             data.cityId is string && data.cityId.size() > 0 &&
+             data.category in categories &&
+             data.description is string && data.description.size() > 0 && data.description.size() < 5000 &&
+             (!('bestTimeToVisit' in data) || (data.bestTimeToVisit is string && data.bestTimeToVisit.size() < 200)) &&
+             (!('entryFees' in data) || (data.entryFees is string && data.entryFees.size() < 500)) &&
+             (!('timings' in data) || (data.timings is string && data.timings.size() < 500)) &&
+             (!('locationUrl' in data) || isValidUrl(data.locationUrl)) &&
+             (!('imageUrls' in data) || (data.imageUrls is list && data.imageUrls.size() <= 10)) &&
+             (!('nearbyAttractions' in data) || (data.nearbyAttractions is list && data.nearbyAttractions.size() <= 20)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 20)) &&
+             (!('isFeatured' in data) || data.isFeatured is bool);
+    }
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'email', 'role']) &&
+             data.uid is string && data.uid == request.auth.uid &&
+             data.email is string && isValidEmail(data.email) &&
+             data.role in ['admin', 'user'] &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() < 100));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /states/{stateId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidState(request.resource.data);
+    }
+
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidCity(request.resource.data);
+    }
+
+    match /places/{placeId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidPlace(request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'user' || isAdmin());
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

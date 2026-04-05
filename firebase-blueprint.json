@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "State": {
+      "title": "State",
+      "description": "A state in India",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the state" },
+        "code": { "type": "string", "description": "Short code for the state" },
+        "description": { "type": "string", "description": "Description of the state" },
+        "imageUrl": { "type": "string", "description": "URL to an image of the state" },
+        "capital": { "type": "string", "description": "Capital city of the state" },
+        "region": { "type": "string", "description": "Region of India (e.g., North, South)" },
+        "tagline": { "type": "string", "description": "Official tagline of the state" },
+        "language": { "type": "string", "description": "Primary language spoken" }
+      },
+      "required": ["name", "code"]
+    },
+    "City": {
+      "title": "City",
+      "description": "A city within a state",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the city" },
+        "stateId": { "type": "string", "description": "ID of the state this city belongs to" },
+        "description": { "type": "string", "description": "Description of the city" },
+        "imageUrl": { "type": "string", "description": "URL to an image of the city" }
+      },
+      "required": ["name", "stateId"]
+    },
+    "TouristPlace": {
+      "title": "TouristPlace",
+      "description": "A tourist destination",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the destination" },
+        "stateId": { "type": "string", "description": "ID of the state" },
+        "cityId": { "type": "string", "description": "ID of the city" },
+        "category": { 
+          "type": "string", 
+          "enum": ["Heritage", "Nature", "Religious", "Adventure", "Urban", "Beach", "Wildlife"],
+          "description": "Category of the destination"
+        },
+        "description": { "type": "string", "description": "Detailed description" },
+        "bestTimeToVisit": { "type": "string", "description": "Best months to visit" },
+        "entryFees": { "type": "string", "description": "Entry fee information" },
+        "timings": { "type": "string", "description": "Opening and closing times" },
+        "locationUrl": { "type": "string", "description": "Google Maps URL" },
+        "imageUrls": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of image URLs"
+        },
+        "nearbyAttractions": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of nearby attraction names"
+        },
+        "tags": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "Descriptive tags"
+        },
+        "isFeatured": { "type": "boolean", "description": "Whether to feature on home page" }
+      },
+      "required": ["name", "stateId", "cityId", "category", "description"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile and role information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "role": { 
+          "type": "string", 
+          "enum": ["admin", "user"],
+          "description": "User role (admin or user)"
+        },
+        "displayName": { "type": "string", "description": "User display name" }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "states": {
+      "schema": { "$ref": "State" },
+      "description": "Collection of Indian states"
+    },
+    "cities": {
+      "schema": { "$ref": "City" },
+      "description": "Collection of cities within states"
+    },
+    "places": {
+      "schema": { "$ref": "TouristPlace" },
+      "description": "Collection of tourist destinations"
+    },
+    "users": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "Collection of user profiles and roles"
+    }
+  }
+}
