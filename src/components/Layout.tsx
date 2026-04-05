@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import ErrorBoundary from './ErrorBoundary';
 
@@ -41,10 +42,12 @@ export default function Layout({ children }: LayoutProps) {
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Categories</h3>
                 <ul className="space-y-2">
-                  <li><span className="text-gray-500 text-sm">Heritage & History</span></li>
-                  <li><span className="text-gray-500 text-sm">Nature & Wildlife</span></li>
-                  <li><span className="text-gray-500 text-sm">Religious & Spiritual</span></li>
-                  <li><span className="text-gray-500 text-sm">Adventure & Sports</span></li>
+                  <li><Link to="/states?category=Heritage" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Heritage & History</Link></li>
+                  <li><Link to="/states?category=Nature" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Nature & Landscapes</Link></li>
+                  <li><Link to="/states?category=Religious" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Religious & Spiritual</Link></li>
+                  <li><Link to="/states?category=Adventure" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Adventure & Sports</Link></li>
+                  <li><Link to="/states?category=Beach" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Beaches & Coastal</Link></li>
+                  <li><Link to="/states?category=Wildlife" className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Wildlife & Safaris</Link></li>
                 </ul>
               </div>
             </div>

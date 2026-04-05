@@ -6,7 +6,7 @@ import { State, TouristPlace, City } from '../types';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
-const CATEGORIES = ['Heritage', 'Nature', 'Religious', 'Adventure', 'Urban', 'Beach', 'Wildlife'];
+const CATEGORIES = ['Heritage', 'Nature', 'Religious', 'Adventure', 'Beach', 'Wildlife'];
 
 export default function StateList() {
   const { stateId } = useParams<{ stateId: string }>();

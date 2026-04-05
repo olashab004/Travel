@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, ArrowRight, Compass, Landmark, TreePine, Heart, Mountain, Star, Users, Globe, Layers } from 'lucide-react';
+import { Search, MapPin, ArrowRight, Compass, Landmark, TreePine, Heart, Mountain, Star, Users, Globe, Layers, Palmtree, PawPrint } from 'lucide-react';
 import { firestoreService } from '../services/firestoreService';
 import { State, TouristPlace } from '../types';
 import { motion } from 'motion/react';
@@ -11,7 +11,8 @@ const CATEGORIES = [
   { name: 'Nature', icon: TreePine, color: 'bg-emerald-100 text-emerald-700' },
   { name: 'Religious', icon: Heart, color: 'bg-orange-100 text-orange-700' },
   { name: 'Adventure', icon: Mountain, color: 'bg-blue-100 text-blue-700' },
-  { name: 'Urban', icon: Compass, color: 'bg-indigo-100 text-indigo-700' },
+  { name: 'Beach', icon: Palmtree, color: 'bg-cyan-100 text-cyan-700' },
+  { name: 'Wildlife', icon: PawPrint, color: 'bg-purple-100 text-purple-700' },
 ];
 
 export default function Home() {
@@ -114,17 +115,17 @@ export default function Home() {
             className="flex flex-wrap justify-center gap-8 md:gap-16 pt-8"
           >
             <div className="flex flex-col items-center">
-              <span className="text-3xl md:text-4xl font-black text-white">28</span>
+              <span className="text-3xl md:text-4xl font-black text-white">{states.length || 18}</span>
               <span className="text-indigo-300 text-sm font-bold uppercase tracking-widest">States</span>
             </div>
             <div className="w-px h-12 bg-white/20 hidden md:block"></div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl md:text-4xl font-black text-white">100+</span>
+              <span className="text-3xl md:text-4xl font-black text-white">60+</span>
               <span className="text-indigo-300 text-sm font-bold uppercase tracking-widest">Destinations</span>
             </div>
             <div className="w-px h-12 bg-white/20 hidden md:block"></div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl md:text-4xl font-black text-white">7</span>
+              <span className="text-3xl md:text-4xl font-black text-white">{CATEGORIES.length}</span>
               <span className="text-indigo-300 text-sm font-bold uppercase tracking-widest">Categories</span>
             </div>
           </motion.div>
@@ -142,6 +143,7 @@ export default function Home() {
             <motion.div 
               key={cat.name}
               whileHover={{ y: -8 }}
+              onClick={() => navigate(`/states?category=${cat.name}`)}
               className="flex flex-col items-center p-10 rounded-[2.5rem] bg-gray-50 hover:bg-white hover:shadow-2xl transition-all cursor-pointer border border-transparent hover:border-gray-100 group"
             >
               <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 shadow-sm", cat.color)}>

@@ -271,7 +271,6 @@ export default function Admin() {
                   <option value="Nature">Nature</option>
                   <option value="Religious">Religious</option>
                   <option value="Adventure">Adventure</option>
-                  <option value="Urban">Urban</option>
                   <option value="Beach">Beach</option>
                   <option value="Wildlife">Wildlife</option>
                 </select>

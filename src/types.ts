@@ -23,7 +23,7 @@ export interface TouristPlace {
   name: string;
   stateId: string;
   cityId: string;
-  category: 'Heritage' | 'Nature' | 'Religious' | 'Adventure' | 'Urban' | 'Beach' | 'Wildlife';
+  category: 'Heritage' | 'Nature' | 'Religious' | 'Adventure' | 'Beach' | 'Wildlife';
   description: string;
   bestTimeToVisit?: string;
   entryFees?: string;
