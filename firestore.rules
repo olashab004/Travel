@@ -106,7 +106,7 @@ service cloud.firestore {
     }
 
     function isValidPlace(data) {
-      let categories = ['Heritage', 'Nature', 'Religious', 'Adventure', 'Urban', 'Beach', 'Wildlife'];
+      let categories = ['Heritage', 'Nature', 'Religious', 'Adventure', 'Beach', 'Wildlife'];
       return hasRequiredFields(['name', 'stateId', 'cityId', 'category', 'description']) &&
              data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
              data.stateId is string && data.stateId.size() > 0 &&
@@ -120,7 +120,9 @@ service cloud.firestore {
              (!('imageUrls' in data) || (data.imageUrls is list && data.imageUrls.size() <= 10)) &&
              (!('nearbyAttractions' in data) || (data.nearbyAttractions is list && data.nearbyAttractions.size() <= 20)) &&
              (!('tags' in data) || (data.tags is list && data.tags.size() <= 20)) &&
-             (!('isFeatured' in data) || data.isFeatured is bool);
+             (!('isFeatured' in data) || data.isFeatured is bool) &&
+             (!('rating' in data) || (data.rating is number && data.rating >= 0 && data.rating <= 5)) &&
+             (!('reviewsCount' in data) || (data.reviewsCount is number && data.reviewsCount >= 0));
     }
 
     function isValidUser(data) {

@@ -33,6 +33,8 @@ export interface TouristPlace {
   nearbyAttractions?: string[];
   tags?: string[];
   isFeatured?: boolean;
+  rating?: number;
+  reviewsCount?: number;
 }
 
 export interface UserProfile {

@@ -37,7 +37,8 @@ export default function Admin() {
       setUser(currentUser);
       if (currentUser) {
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists() && userDoc.data().role === 'admin') {
+        const isDefaultAdmin = currentUser.email === 'sahilola44@gmail.com';
+        if ((userDoc.exists() && userDoc.data().role === 'admin') || isDefaultAdmin) {
           setIsAdmin(true);
           fetchData();
         } else {
