@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, ArrowLeft, Clock, Ticket, Calendar, ExternalLink, Landmark, TreePine, Heart, Mountain, Compass, ChevronRight, Share2, Info, Navigation } from 'lucide-react';
+import { MapPin, ArrowLeft, Clock, Ticket, Calendar, ExternalLink, Landmark, TreePine, Heart, Mountain, Compass, ChevronRight, Share2, Info, Navigation, ShieldCheck } from 'lucide-react';
 import { firestoreService } from '../services/firestoreService';
 import { TouristPlace, State, City } from '../types';
 import ReactMarkdown from 'react-markdown';
@@ -180,6 +180,50 @@ export default function PlaceDetail() {
               <div className="prose prose-indigo max-w-none text-gray-600 leading-relaxed text-lg">
                 <ReactMarkdown>{place.description}</ReactMarkdown>
               </div>
+
+              {(place.rituals?.length || 0) > 0 && (
+                <div className="mt-12 pt-12 border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <Heart className="mr-2 text-indigo-600" size={24} />
+                    Daily Rituals & Poojas
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {place.rituals?.map((ritual, idx) => (
+                      <div key={idx} className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 text-indigo-900 font-medium text-sm">
+                        {ritual}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(place.festivals?.length || 0) > 0 && (
+                <div className="mt-12 pt-12 border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <Calendar className="mr-2 text-indigo-600" size={24} />
+                    Major Festivals
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {place.festivals?.map((festival, idx) => (
+                      <span key={idx} className="px-4 py-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100 font-bold text-xs uppercase tracking-wider">
+                        {festival}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {place.dressCode && (
+                <div className="mt-12 pt-12 border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <ShieldCheck className="mr-2 text-indigo-600" size={24} />
+                    Dress Code & Guidelines
+                  </h3>
+                  <div className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 text-gray-600 leading-relaxed italic">
+                    "{place.dressCode}"
+                  </div>
+                </div>
+              )}
 
               {place.locationUrl && (
                 <div className="mt-12 pt-12 border-t border-gray-100">

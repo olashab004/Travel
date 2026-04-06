@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCcw } from 'lucide-react';
+import { AlertCircle, Home, RefreshCcw } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface State {
   error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+export default class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null
@@ -26,36 +26,50 @@ class ErrorBoundary extends Component<Props, State> {
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null });
-    window.location.reload();
+    window.location.href = '/';
   };
 
   public render() {
     if (this.state.hasError) {
-      let errorMessage = "An unexpected error occurred.";
-      try {
-        const parsedError = JSON.parse(this.state.error?.message || "");
-        if (parsedError.error) {
-          errorMessage = `Firestore Error: ${parsedError.error} (Operation: ${parsedError.operationType})`;
-        }
-      } catch (e) {
-        errorMessage = this.state.error?.message || errorMessage;
-      }
-
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600 mb-6">
-              <AlertTriangle size={32} />
+          <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 text-center space-y-8 border border-gray-100">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-100 text-red-600 animate-pulse">
+              <AlertCircle size={48} />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-            <p className="text-gray-600 mb-8">{errorMessage}</p>
-            <button
-              onClick={this.handleReset}
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-            >
-              <RefreshCcw className="mr-2 h-5 w-5" />
-              Reload Application
-            </button>
+            
+            <div className="space-y-3">
+              <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Something went wrong</h1>
+              <p className="text-gray-500 text-lg leading-relaxed">
+                We encountered an unexpected error. Don't worry, your data is safe.
+              </p>
+            </div>
+
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <div className="p-4 bg-red-50 rounded-2xl text-left overflow-auto max-h-40 border border-red-100">
+                <p className="text-xs font-mono text-red-700 break-words">
+                  {this.state.error.toString()}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3 pt-4">
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg flex items-center justify-center gap-2 group"
+              >
+                <RefreshCcw size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+                Try Refreshing
+              </button>
+              
+              <button
+                onClick={this.handleReset}
+                className="w-full py-4 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+              >
+                <Home size={20} />
+                Go Back Home
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -64,5 +78,3 @@ class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-export default ErrorBoundary;

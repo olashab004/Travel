@@ -35,6 +35,9 @@ export interface TouristPlace {
   isFeatured?: boolean;
   rating?: number;
   reviewsCount?: number;
+  rituals?: string[];
+  festivals?: string[];
+  dressCode?: string;
 }
 
 export interface UserProfile {
