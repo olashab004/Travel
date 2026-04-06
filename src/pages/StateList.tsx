@@ -95,37 +95,47 @@ export default function StateList() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {states.map((state, idx) => (
-            <motion.div
-              key={state.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-            >
-              <Link to={`/states/${state.id}`} className="group block bg-white rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-gray-50 h-full flex flex-col">
-                <div className="h-72 relative overflow-hidden">
-                  <img 
-                    src={state.imageUrl || `https://picsum.photos/seed/${state.name}/800/600`} 
-                    alt={state.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute top-6 left-6">
-                    <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-xs font-black text-indigo-600 uppercase tracking-[0.2em] shadow-sm">
-                      {state.code}
-                    </span>
+          {states.length > 0 ? (
+            states.map((state, idx) => (
+              <motion.div
+                key={state.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <Link to={`/states/${state.id}`} className="group block bg-white rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-gray-50 h-full flex flex-col">
+                  <div className="h-72 relative overflow-hidden">
+                    <img 
+                      src={state.imageUrl || `https://picsum.photos/seed/${state.name}/800/600`} 
+                      alt={state.name} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute top-6 left-6">
+                      <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-xs font-black text-indigo-600 uppercase tracking-[0.2em] shadow-sm">
+                        {state.code}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-10 space-y-4 flex-grow flex flex-col">
-                  <h3 className="text-3xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors tracking-tight">{state.name}</h3>
-                  <p className="text-gray-500 text-base line-clamp-3 leading-relaxed flex-grow">{state.description || "Discover the incredible heritage and natural beauty of this state."}</p>
-                  <div className="pt-6 flex items-center text-indigo-600 font-black text-lg group-hover:translate-x-2 transition-transform">
-                    Explore Now <ChevronRight size={24} className="ml-2" />
+                  <div className="p-10 space-y-4 flex-grow flex flex-col">
+                    <h3 className="text-3xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors tracking-tight">{state.name}</h3>
+                    <p className="text-gray-500 text-base line-clamp-3 leading-relaxed flex-grow">{state.description || "Discover the incredible heritage and natural beauty of this state."}</p>
+                    <div className="pt-6 flex items-center text-indigo-600 font-black text-lg group-hover:translate-x-2 transition-transform">
+                      Explore Now <ChevronRight size={24} className="ml-2" />
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-24 bg-gray-50 rounded-[4rem] border-4 border-dashed border-gray-100">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white text-gray-300 mb-6 shadow-lg">
+                <MapPin size={32} />
+              </div>
+              <h3 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">No states found</h3>
+              <p className="text-lg text-gray-500 max-w-md mx-auto font-light">The database is currently empty. Please seed the data from the admin panel.</p>
+            </div>
+          )}
         </div>
       </div>
     );

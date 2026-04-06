@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, ArrowRight, Compass, Landmark, TreePine, Heart, Mountain, Star, Users, Globe, Layers, Palmtree, PawPrint } from 'lucide-react';
+import { Search, MapPin, ArrowRight, Compass, Landmark, TreePine, Heart, Mountain, Star, Users, Globe, Layers, Palmtree, PawPrint, Database, ShieldCheck } from 'lucide-react';
 import { firestoreService } from '../services/firestoreService';
+import { seedInitialData } from '../seedData';
+import { auth, db } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { State, TouristPlace } from '../types';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -20,25 +24,62 @@ export default function Home() {
   const [featuredPlaces, setFeaturedPlaces] = useState<TouristPlace[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statesData, placesData] = await Promise.all([
-          firestoreService.getStates(),
-          firestoreService.getFeaturedPlaces()
-        ]);
-        setStates(statesData || []);
-        setFeaturedPlaces(placesData || []);
-      } catch (error) {
-        console.error('Error fetching home data:', error);
-      } finally {
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const isDefaultAdmin = currentUser.email === 'sahilola44@gmail.com';
+        if (isDefaultAdmin) {
+          setIsAdmin(true);
+        } else {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          setIsAdmin(userDoc.exists() && userDoc.data().role === 'admin');
+        }
+      } else {
+        setIsAdmin(false);
       }
-    };
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [statesData, placesData] = await Promise.all([
+        firestoreService.getStates(),
+        firestoreService.getFeaturedPlaces()
+      ]);
+      setStates(statesData || []);
+      setFeaturedPlaces(placesData || []);
+    } catch (error) {
+      console.error('Error fetching home data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const handleSeed = async () => {
+    if (window.confirm('This will seed the database with initial Indian travel data. Continue?')) {
+      setSeeding(true);
+      try {
+        await seedInitialData();
+        await fetchData();
+        alert('Database seeded successfully!');
+      } catch (error) {
+        console.error('Seed failed:', error);
+        alert('Seed failed. Check console for details.');
+      } finally {
+        setSeeding(false);
+      }
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +102,34 @@ export default function Home() {
         </div>
         
         <div className="relative z-10 max-w-5xl mx-auto px-4 text-center space-y-10">
+          {isAdmin && states.length === 0 && !loading && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-amber-500/90 backdrop-blur-md p-6 rounded-3xl border border-amber-400 shadow-2xl max-w-2xl mx-auto mb-8"
+            >
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white">
+                    <Database size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-black text-lg">Database is Empty</h3>
+                    <p className="text-amber-50 text-sm">As an admin, you can seed the initial travel data for Bharat.</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={handleSeed}
+                  disabled={seeding}
+                  className="px-6 py-3 bg-white text-amber-600 font-black rounded-xl hover:bg-amber-50 transition-all shadow-lg flex items-center gap-2 disabled:opacity-50"
+                >
+                  {seeding ? <Database className="animate-spin" size={20} /> : <Database size={20} />}
+                  {seeding ? 'Seeding...' : 'Seed Data'}
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
