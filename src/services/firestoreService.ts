@@ -6,6 +6,7 @@ import {
   addDoc, 
   updateDoc, 
   deleteDoc, 
+  setDoc,
   query, 
   where, 
   onSnapshot
@@ -145,6 +146,32 @@ export const firestoreService = {
       return await deleteDoc(docRef);
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);
+    }
+  },
+
+  async getAdminSettings() {
+    const path = 'settings/admin';
+    try {
+      const docRef = doc(db, 'settings', 'admin');
+      const snapshot = await getDoc(docRef);
+      return snapshot.exists() ? snapshot.data() : null;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+    }
+  },
+
+  async updateAdminSettings(data: any) {
+    const path = 'settings/admin';
+    try {
+      const docRef = doc(db, 'settings', 'admin');
+      const snapshot = await getDoc(docRef);
+      if (snapshot.exists()) {
+        return await updateDoc(docRef, data);
+      } else {
+        return await setDoc(docRef, data);
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
     }
   }
 };
